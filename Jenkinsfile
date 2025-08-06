@@ -1,27 +1,28 @@
 pipeline {
-  agent any
+    agent any
 
-  environment {
-    DEPLOY_DIR = '/var/www/html'
-  }
+    stages {
+        stage('Clone Repo') {
+            steps {
+                git 'https://github.com/karanlnt/sim-login.git'
+            }
+        }
 
-  stages {
-    stage('Clone Repo') {
-      steps {
-        git branch: 'main', url: 'https://github.com/karanlnt/sim-login.git'
-      }
+        stage('Build Docker Image') {
+            steps {
+                echo '🐳 Building Docker image...'
+                sh 'docker build -t flask-login-app .'
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                echo '🚀 Running Docker container...'
+                sh '''
+                    docker rm -f login-container || true
+                    docker run -d -p 5000:5000 --name login-container flask-login-app
+                '''
+            }
+        }
     }
-
-    stage('Install & Build') {
-      steps {
-        sh 'python3 -m pip install -r requirements.txt'
-      }
-    }
-
-    stage('Run App') {
-      steps {
-        sh 'python3 app.py'
-      }
-    }
-  }
 }
