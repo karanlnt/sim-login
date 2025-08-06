@@ -20,7 +20,8 @@ pipeline {
                 echo '🚀 Running Docker container...'
                 sh '''
                     docker rm -f login-container || true
-                    docker run -d -p 7000:7000 --name login-container flask-login-app
+                   docker run -d -p 7000:7000 --name login-container flask-login-app
+
                 '''
             }
         }
