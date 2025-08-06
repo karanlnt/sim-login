@@ -1,29 +1,27 @@
-// Jenkinsfile
 pipeline {
-    agent any
+  agent any
 
-    stages {
-        stage('Clone Repo') {
-            steps {
-                git 'https://github.com/karanlnt/sim-login.git'
-            }
-        }
+  environment {
+    DEPLOY_DIR = '/var/www/html'
+  }
 
-        stage('Install & Build') {
-            steps {
-                echo "Building Docker image..."
-                sh 'docker build -t flask-login-app .'
-            }
-        }
-
-        stage('Run App') {
-            steps {
-                echo "Running Docker container..."
-                sh '''
-                    docker rm -f flask-login || true
-                    docker run -d -p 7000:7000 --name flask-login flask-login-app
-                '''
-            }
-        }
+  stages {
+    stage('Clone Repo') {
+      steps {
+        git branch: 'main', url: 'https://github.com/karanlnt/sim-login.git'
+      }
     }
+
+    stage('Install & Build') {
+      steps {
+        sh 'pip install -r requirements.txt'
+      }
+    }
+
+    stage('Run App') {
+      steps {
+        sh 'python3 app.py'
+      }
+    }
+  }
 }
